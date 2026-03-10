@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import DataTable from "../../components/DataTable";
-import { Link } from "react-router-dom";
-import { Trash2 } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Trash2, Eye } from "lucide-react";
 
 function Clients() {
+  const navigate = useNavigate();
   const initialData = [
     {
       id: "CLI-001",
@@ -26,6 +27,7 @@ function Clients() {
 
   useEffect(() => {
     const persistedClients = JSON.parse(localStorage.getItem("trek_clients") || "[]");
+
     const formattedPersisted = persistedClients.map((item: any) => ({
       ...item,
       Name: item.name,
@@ -33,29 +35,45 @@ function Clients() {
       Phone: item.phone,
       Company: item.company,
       Actions: (
-        <button
-          onClick={() => handleDelete(item.id)}
-          className="p-1 text-slate-400 hover:text-red-600 transition-colors"
-        >
-          <Trash2 size={16} />
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => navigate(`/client-details/${item.id}`)}
+            className="p-1 text-slate-400 hover:text-brand-600 transition-colors"
+          >
+            <Eye size={16} />
+          </button>
+          <button
+            onClick={() => handleDelete(item.id)}
+            className="p-1 text-slate-400 hover:text-red-600 transition-colors"
+          >
+            <Trash2 size={16} />
+          </button>
+        </div>
       )
     }));
 
     const formattedInitial = initialData.map(item => ({
       ...item,
       Actions: (
-        <button
-          onClick={() => handleDelete(item.id)}
-          className="p-1 text-slate-400 hover:text-red-600 transition-colors"
-        >
-          <Trash2 size={16} />
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => navigate(`/client-details/${item.id}`)}
+            className="p-1 text-slate-400 hover:text-brand-600 transition-colors"
+          >
+            <Eye size={16} />
+          </button>
+          <button
+            onClick={() => handleDelete(item.id)}
+            className="p-1 text-slate-400 hover:text-red-600 transition-colors"
+          >
+            <Trash2 size={16} />
+          </button>
+        </div>
       )
     }));
 
     setTableData([...formattedInitial, ...formattedPersisted]);
-  }, []);
+  }, [navigate]);
 
   const handleDelete = (id: string) => {
     // Check if it's in localStorage

@@ -82,8 +82,8 @@ export default function Login() {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="relative z-10 text-white max-w-md"
         >
-          <div className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-sm flex items-center justify-center text-2xl font-bold mb-8 ring-1 ring-white/20">
-            T
+          <div className="w-20 h-20 mb-8 bg-white rounded-2xl p-2 shadow-lg ring-1 ring-white/20">
+            <img src="/logo.png" alt="TrekGroup Logo" className="w-full h-full object-contain" />
           </div>
           <h1 className="text-4xl font-bold leading-tight mb-4">
             TrekGroup
@@ -118,8 +118,8 @@ export default function Login() {
         >
           {/* Mobile logo */}
           <div className="lg:hidden text-center mb-8">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center text-white font-bold text-lg mx-auto shadow-lg shadow-brand-500/30">
-              T
+            <div className="w-16 h-16 mx-auto mb-8 bg-white rounded-xl p-1.5 shadow-lg ring-1 ring-gray-100">
+              <img src="/logo.png" alt="TrekGroup Logo" className="w-full h-full object-contain" />
             </div>
           </div>
 

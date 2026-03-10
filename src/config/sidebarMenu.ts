@@ -71,7 +71,7 @@ export const sidebarMenu: SidebarSection[] = [
     ],
   },
 
-  // ─── Clients (Super Admin) ───────────────────────────
+  // ─── Clients ─────────────────────────────────────────
   {
     section: "Clients",
     roles: ["SUPER_ADMIN"],
@@ -80,13 +80,34 @@ export const sidebarMenu: SidebarSection[] = [
     ],
   },
 
-  // ─── Accounts (Super Admin + Accounts) ───────────────
+  // ─── Business Proposals ───────────────────────
   {
-    section: "Accounts",
+    section: "Business Proposals",
+    roles: ["SUPER_ADMIN", "PROJECT_MANAGER"],
+    items: [
+      { label: "Proposal List", path: "/proposals", icon: FileText },
+      { label: "Create Proposal", path: "/create-proposal", icon: ClipboardList },
+      { label: "Draft Proposals", path: "/draft-proposals", icon: FileText },
+    ],
+  },
+
+  // ─── Invoicing (Project Manager) ───────────────────────
+  {
+    section: "Invoicing",
+    roles: ["PROJECT_MANAGER"],
+    items: [
+      { label: "Invoices", path: "/invoices", icon: Receipt },
+      { label: "Create Invoice", path: "/create-invoice", icon: ClipboardList },
+    ],
+  },
+
+  // ─── Accounting (Super Admin + Accounts) ───────────────
+  {
+    section: "Accounting",
     roles: ["SUPER_ADMIN", "ACCOUNTS"],
     items: [
       { label: "Chart of Accounts", path: "/chart-of-accounts", icon: FileText },
-      { label: "Invoices", path: "/invoices", icon: FileText },
+      { label: "Invoices", path: "/invoices", icon: Receipt },
       { label: "Payments", path: "/payments", icon: CreditCard },
       { label: "Expenses", path: "/expenses", icon: Receipt },
     ],
@@ -123,8 +144,9 @@ export const sidebarMenu: SidebarSection[] = [
     roles: ["CLIENT"],
     items: [
       { label: "My Jobs", path: "/client/jobs", icon: Briefcase },
-      { label: "Invoices", path: "/client/invoices", icon: FileText },
-      { label: "Documents", path: "/job-documents", icon: FileText },
+      { label: "My Proposals", path: "/client/proposals", icon: FileText },
+      { label: "My Invoices", path: "/client/invoices", icon: Receipt },
+      { label: "Documents", path: "/job-documents", icon: Folder },
     ],
   },
 ];

@@ -9,12 +9,12 @@ function Sidebar() {
   const userRole = user?.role;
 
   return (
-    <aside className="w-[260px] h-screen bg-sidebar flex flex-col border-r border-sidebar-border">
+    <aside className="print:hidden w-[260px] h-screen bg-sidebar flex flex-col border-r border-sidebar-border">
       {/* ─── Brand Header ──────────────────────────────── */}
       <div className="px-6 py-5 border-b border-sidebar-border">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-brand-500/30">
-            T
+          <div className="w-10 h-10 flex items-center justify-center">
+            <img src="/logo.png" alt="TrekGroup Logo" className="w-full h-full object-contain drop-shadow-md" />
           </div>
           <div>
             <h1 className="text-sm font-semibold text-white tracking-wide">
@@ -59,10 +59,9 @@ function Sidebar() {
                       key={index}
                       to={item.path}
                       className={`group flex items-center gap-3 px-3 py-2 text-[13px] rounded-lg transition-all duration-200
-                        ${
-                          active
-                            ? "bg-brand-600 text-white shadow-lg shadow-brand-600/25 font-medium"
-                            : "text-slate-400 hover:bg-sidebar-hover hover:text-slate-200"
+                        ${active
+                          ? "bg-brand-600 text-white shadow-lg shadow-brand-600/25 font-medium"
+                          : "text-slate-400 hover:bg-sidebar-hover hover:text-slate-200"
                         }
                       `}
                     >

@@ -32,6 +32,7 @@ import JobDocuments from "../pages/pm/JobDocuments";
 
 import Clients from "../pages/admin/Clients";
 import CreateClient from "../pages/admin/CreateClient";
+import ClientDetails from "../pages/admin/ClientDetails";
 
 import BOQ from "../pages/pm/BOQ";
 import CreateBOQ from "../pages/pm/CreateBOQ";
@@ -39,6 +40,10 @@ import BOQDetails from "../pages/pm/BOQDetails";
 import Quotations from "../pages/pm/Quotations";
 import CreateQuotation from "../pages/pm/CreateQuotation";
 import QuotationDetails from "../pages/pm/QuotationDetails";
+
+import Proposals from "../pages/admin/Proposals";
+import CreateProposal from "../pages/admin/CreateProposal";
+import ProposalDetails from "../pages/admin/ProposalDetails";
 
 import Invoices from "../pages/accounts/Invoices";
 import CreateInvoice from "../pages/accounts/CreateInvoice";
@@ -61,6 +66,7 @@ import CreateStockMovement from "../pages/inventory/CreateStockMovement";
 import ClientDashboard from "../pages/client_portal/ClientDashboard";
 import ClientJobs from "../pages/client_portal/ClientJobs";
 import ClientInvoices from "../pages/client_portal/ClientInvoices";
+import ClientProposals from "../pages/client_portal/ClientProposals";
 
 import LowStock from "../pages/inventory/LowStock";
 import ProfitReport from "../pages/inventory/ProfitReport";
@@ -102,6 +108,9 @@ function AppRoutes() {
           <Route path="/permissions" element={<Permissions />} />
           <Route path="/clients" element={<Clients />} />
           <Route path="/create-client" element={<CreateClient />} />
+          <Route path="/client-details/:id" element={<ClientDetails />} />
+
+          <Route path="/proposal-templates" element={<Proposals filter="Templates" />} />
 
           {/* Inventory / Trading */}
           <Route path="/inventory" element={<InventoryDashboard />} />
@@ -130,9 +139,6 @@ function AppRoutes() {
       >
         <Route element={<DashboardLayout />}>
           <Route path="/accounts/dashboard" element={<AccountsDashboard />} />
-          <Route path="/invoices" element={<Invoices />} />
-          <Route path="/create-invoice" element={<CreateInvoice />} />
-          <Route path="/invoice-details/:id" element={<InvoiceDetails />} />
           <Route path="/payments" element={<Payments />} />
           <Route path="/expenses" element={<Expenses />} />
           <Route path="/create-expense" element={<CreateExpense />} />
@@ -166,6 +172,12 @@ function AppRoutes() {
           <Route path="/quotations" element={<Quotations />} />
           <Route path="/create-quotation" element={<CreateQuotation />} />
           <Route path="/quotation-details/:id" element={<QuotationDetails />} />
+
+          {/* Proposals (Shared Admin/PM) */}
+          <Route path="/proposals" element={<Proposals />} />
+          <Route path="/create-proposal" element={<CreateProposal />} />
+          <Route path="/edit-proposal/:id" element={<CreateProposal />} />
+          <Route path="/draft-proposals" element={<Proposals filter="Draft" />} />
         </Route>
       </Route>
 
@@ -177,6 +189,23 @@ function AppRoutes() {
           <Route path="/client/dashboard" element={<ClientDashboard />} />
           <Route path="/client/jobs" element={<ClientJobs />} />
           <Route path="/client/invoices" element={<ClientInvoices />} />
+          <Route path="/client/proposals" element={<ClientProposals />} />
+        </Route>
+      </Route>
+
+
+
+      {/* ─── Shared: SUPER_ADMIN, PROJECT_MANAGER & ACCOUNTS ─── */}
+      <Route
+        element={
+          <ProtectedRoute
+            allowedRoles={["SUPER_ADMIN", "PROJECT_MANAGER", "ACCOUNTS"]}
+          />
+        }
+      >
+        <Route element={<DashboardLayout />}>
+          <Route path="/invoices" element={<Invoices />} />
+          <Route path="/create-invoice" element={<CreateInvoice />} />
         </Route>
       </Route>
 
@@ -190,6 +219,8 @@ function AppRoutes() {
       >
         <Route element={<DashboardLayout />}>
           <Route path="/job-documents" element={<JobDocuments />} />
+          <Route path="/proposal-details/:id" element={<ProposalDetails />} />
+          <Route path="/invoice-details/:id" element={<InvoiceDetails />} />
         </Route>
       </Route>
     </Routes>

@@ -1,4 +1,3 @@
-import ClientLayout from "../../layouts/ClientLayout";
 import StatCard from "../../components/StatCard";
 import ChartCard from "../../components/ChartCard";
 import { Briefcase, FileText, CreditCard, Clock, Terminal } from "lucide-react";
@@ -27,7 +26,7 @@ const activityMoments = [
 
 function ClientDashboard() {
   return (
-    <ClientLayout>
+    <>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
@@ -120,7 +119,7 @@ function ClientDashboard() {
           </div>
         </div>
       </div>
-    </ClientLayout>
+    </>
   );
 }
 

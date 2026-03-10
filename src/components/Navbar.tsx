@@ -27,7 +27,7 @@ function Navbar() {
   }, []);
 
   return (
-    <div className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-6 shadow-sm">
+    <div className="print:hidden h-16 bg-white border-b border-gray-100 flex items-center justify-between px-6 shadow-sm">
       {/* ─── Search Bar ────────────────────────────────── */}
       <div className="flex items-center bg-surface-muted border border-gray-100 px-4 py-2.5 rounded-xl w-80 focus-within:border-brand-300 focus-within:ring-2 focus-within:ring-brand-50 transition-all">
         <Search size={16} className="text-gray-400" />
@@ -68,9 +68,8 @@ function Navbar() {
             </div>
             <ChevronDown
               size={14}
-              className={`text-gray-400 transition-transform duration-200 ${
-                profileOpen ? "rotate-180" : ""
-              }`}
+              className={`text-gray-400 transition-transform duration-200 ${profileOpen ? "rotate-180" : ""
+                }`}
             />
           </button>
 

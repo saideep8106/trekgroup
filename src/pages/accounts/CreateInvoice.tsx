@@ -1,106 +1,215 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import PageHeader from "../../components/PageHeader";
+import FormInput from "../../components/forms/FormInput";
+import { Plus, Trash2, Save, ArrowLeft } from "lucide-react";
 import { useActivity } from "../../context/ActivityContext";
 
-function CreateInvoice() {
+interface InvoiceItem {
+  id: string;
+  description: string;
+  quantity: number;
+  unitPrice: number;
+  amount: number;
+}
+
+export default function CreateInvoice() {
   const navigate = useNavigate();
+  const { id } = useParams();
   const { logActivity } = useActivity();
+  const isEditing = !!id;
 
   const [form, setForm] = useState({
-    invoiceNo: "",
+    invoiceNo: `INV-2024-${Math.floor(1000 + Math.random() * 9000)}`,
     client: "",
-    amount: "",
-    status: "Pending"
+    refType: "General",
+    refNo: "",
+    date: new Date().toISOString().split("T")[0],
+    dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+    status: "Unpaid",
+    taxRate: 0,
+    discount: 0,
+    notes: "",
+    paymentTerms: "Payable within 15 days"
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value
-    });
+  const [items, setItems] = useState<InvoiceItem[]>([]);
+
+  const [totals, setTotals] = useState({
+    subtotal: 0,
+    taxAmount: 0,
+    total: 0
+  });
+
+  useEffect(() => {
+    // If referencing a proposal, we might want to pre-fill (mock logic)
+    const params = new URLSearchParams(window.location.search);
+    const propId = params.get("proposalId");
+    if (propId) {
+      const proposals = JSON.parse(localStorage.getItem("trek_proposals") || "[]");
+      const prop = proposals.find((p: any) => p.id === propId);
+      if (prop) {
+        setForm(prev => ({ ...prev, client: prop.client, refType: "Proposal", refNo: prop.proposalNo }));
+        setItems(prop.items.map((it: any) => ({ ...it, id: Date.now() + Math.random().toString() })));
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    const subtotal = items.reduce((sum, item) => sum + item.amount, 0);
+    const taxAmount = (subtotal * (form.taxRate / 100));
+    const total = subtotal + taxAmount - form.discount;
+    setTotals({ subtotal, taxAmount, total });
+  }, [items, form.taxRate, form.discount]);
+
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const value = e.target.type === "number" ? parseFloat(e.target.value) : e.target.value;
+    setForm({ ...form, [e.target.name]: value });
+  };
+
+  const handleItemChange = (index: number, field: keyof InvoiceItem, value: any) => {
+    const newItems = [...items];
+    const item = { ...newItems[index], [field]: value };
+    if (field === "quantity" || field === "unitPrice") {
+      item.amount = (item.quantity || 0) * (item.unitPrice || 0);
+    }
+    newItems[index] = item;
+    setItems(newItems);
+  };
+
+  const addItem = () => {
+    setItems([...items, { id: Date.now().toString(), description: "", quantity: 1, unitPrice: 0, amount: 0 }]);
+  };
+
+  const removeItem = (index: number) => {
+    setItems(items.filter((_, i) => i !== index));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const newInvoice = {
+    const invoiceData = {
       ...form,
-      id: Math.floor(Math.random() * 1000).toString()
+      id: isEditing ? id : `inv-${Date.now()}`,
+      items,
+      ...totals,
+      amount: totals.total // for list view
     };
+
     const existing = JSON.parse(localStorage.getItem("trek_invoices") || "[]");
-    localStorage.setItem("trek_invoices", JSON.stringify([...existing, newInvoice]));
+    const updated = isEditing ? existing.map((i: any) => i.id === id ? invoiceData : i) : [...existing, invoiceData];
+    localStorage.setItem("trek_invoices", JSON.stringify(updated));
 
-    logActivity(`Created Invoice ${form.invoiceNo}`, "finance", `/invoices`, form.client);
-
+    logActivity(`${isEditing ? "Updated" : "Created"} Invoice ${form.invoiceNo}`, "finance", "/invoices", form.invoiceNo);
     navigate("/invoices");
   };
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Create Invoice</h1>
+      <div className="flex items-center gap-4 mb-6">
+        <button onClick={() => navigate(-1)} className="p-2 hover:bg-slate-100 rounded-full transition-colors">
+          <ArrowLeft size={20} />
+        </button>
+        <PageHeader title={isEditing ? "Edit Invoice" : "Create New Invoice"} />
+      </div>
 
-      <div className="bg-white p-6 rounded-xl border shadow-sm max-w-3xl">
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm mb-1 text-gray-600">Client Name</label>
-            <input
-              type="text"
-              name="client"
-              value={form.client}
-              onChange={handleChange}
-              className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter client name"
-              required
-            />
-          </div>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="bg-white p-6 rounded-xl border shadow-sm grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <FormInput label="Invoice No" name="invoiceNo" value={form.invoiceNo} disabled />
 
-          <div>
-            <label className="block text-sm mb-1 text-gray-600">Invoice Number</label>
-            <input
-              type="text"
-              name="invoiceNo"
-              value={form.invoiceNo}
-              onChange={handleChange}
-              className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
-              placeholder="INV-001"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm mb-1 text-gray-600">Amount (QAR)</label>
-            <input
-              type="number"
-              name="amount"
-              value={form.amount}
-              onChange={handleChange}
-              className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter amount"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm mb-1 text-gray-600">Status</label>
-            <select
-              name="status"
-              value={form.status}
-              onChange={handleChange}
-              className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
-            >
-              <option>Pending</option>
-              <option>Paid</option>
+          <div className="flex flex-col gap-1">
+            <label className="text-xs font-semibold text-slate-500 uppercase">Client</label>
+            <select name="client" value={form.client} onChange={handleFormChange} className="border p-2 rounded-lg" required>
+              <option value="">Select Client</option>
+              <option value="ABC Company">ABC Company</option>
+              <option value="XYZ Ltd">XYZ Ltd</option>
             </select>
           </div>
 
-          <div className="pt-4">
-            <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-              Save Invoice
+          <div className="flex flex-col gap-1">
+            <label className="text-xs font-semibold text-slate-500 uppercase">Ref Type</label>
+            <select name="refType" value={form.refType} onChange={handleFormChange} className="border p-2 rounded-lg">
+              <option value="General">General</option>
+              <option value="Proposal">Proposal</option>
+              <option value="Project">Project</option>
+            </select>
+          </div>
+
+          <FormInput label="Ref Number" name="refNo" value={form.refNo} onChange={handleFormChange} placeholder="e.g. PROP-001" />
+
+          <FormInput label="Invoice Date" name="date" type="date" value={form.date} onChange={handleFormChange} />
+          <FormInput label="Due Date" name="dueDate" type="date" value={form.dueDate} onChange={handleFormChange} />
+        </div>
+
+        <div className="bg-white p-6 rounded-xl border shadow-sm">
+          <div className="flex justify-between mb-4">
+            <h3 className="font-bold">Invoice Items</h3>
+            <button type="button" onClick={addItem} className="text-brand-600 flex items-center gap-1 text-sm font-bold">
+              <Plus size={14} /> Add Item
             </button>
           </div>
-        </form>
-      </div>
+          <table className="w-full">
+            <thead className="text-left bg-slate-50 border-y">
+              <tr>
+                <th className="p-2">Description</th>
+                <th className="p-2 w-20 text-center">Qty</th>
+                <th className="p-2 w-32 text-right">Rate</th>
+                <th className="p-2 w-32 text-right">Amount</th>
+                <th className="p-2 w-10"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((item, idx) => (
+                <tr key={item.id} className="border-b">
+                  <td className="p-2">
+                    <input className="w-full border-none focus:ring-0" placeholder="Item description" value={item.description} onChange={e => handleItemChange(idx, "description", e.target.value)} />
+                  </td>
+                  <td className="p-2">
+                    <input type="number" className="w-full border-none text-center focus:ring-0" value={item.quantity} onChange={e => handleItemChange(idx, "quantity", parseInt(e.target.value))} />
+                  </td>
+                  <td className="p-2">
+                    <input type="number" className="w-full border-none text-right focus:ring-0" value={item.unitPrice} onChange={e => handleItemChange(idx, "unitPrice", parseFloat(e.target.value))} />
+                  </td>
+                  <td className="p-2 text-right font-medium">QAR {item.amount.toLocaleString()}</td>
+                  <td className="p-2">
+                    <button type="button" onClick={() => removeItem(idx)} className="text-slate-300 hover:text-red-500"><Trash2 size={14} /></button>
+                  </td>
+                </tr>
+              ))}
+              {items.length === 0 && (
+                <tr><td colSpan={5} className="p-8 text-center text-slate-400 italic">No items added. Click "Add Item" to start.</td></tr>
+              )}
+            </tbody>
+          </table>
+
+          <div className="mt-6 flex justify-end">
+            <div className="w-64 space-y-2">
+              <div className="flex justify-between text-slate-600">
+                <span>Subtotal</span>
+                <span>QAR {totals.subtotal.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between items-center gap-4 text-slate-600">
+                <span>Tax (%)</span>
+                <input type="number" name="taxRate" value={form.taxRate} onChange={handleFormChange} className="w-20 text-right border rounded p-1" />
+              </div>
+              <div className="flex justify-between items-center gap-4 text-slate-600 border-b pb-2">
+                <span>Discount</span>
+                <input type="number" name="discount" value={form.discount} onChange={handleFormChange} className="w-20 text-right border rounded p-1" />
+              </div>
+              <div className="flex justify-between text-xl font-bold text-brand-700">
+                <span>Total</span>
+                <span>QAR {totals.total.toLocaleString()}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex justify-end gap-3">
+          <button type="button" onClick={() => navigate("/invoices")} className="px-6 py-2 border rounded-lg">Cancel</button>
+          <button type="submit" className="px-8 py-2 bg-brand-600 text-white rounded-lg flex items-center gap-2 hover:bg-brand-700 transition">
+            <Save size={18} /> {isEditing ? "Update Invoice" : "Create Invoice"}
+          </button>
+        </div>
+      </form>
     </div>
   );
 }
-
-export default CreateInvoice;

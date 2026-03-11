@@ -45,16 +45,18 @@ import Proposals from "../pages/admin/Proposals";
 import CreateProposal from "../pages/admin/CreateProposal";
 import ProposalDetails from "../pages/admin/ProposalDetails";
 
-import Invoices from "../pages/accounts/Invoices";
-import CreateInvoice from "../pages/accounts/CreateInvoice";
+import Invoices from "../pages/pm/Invoices";
+import CreateInvoice from "../pages/pm/CreateInvoice";
 import InvoiceDetails from "../pages/accounts/InvoiceDetails";
 import Payments from "../pages/accounts/Payments";
 import Expenses from "../pages/accounts/Expenses";
 import CreateExpense from "../pages/accounts/CreateExpense";
+import ExpenseDetails from "../pages/accounts/ExpenseDetails";
 import ChartOfAccounts from "../pages/accounts/ChartOfAccounts";
 import CreateAccount from "../pages/accounts/CreateAccount";
 import ProfitLoss from "../pages/accounts/ProfitLoss";
 import BalanceSheet from "../pages/accounts/BalanceSheet";
+import FinancialReports from "../pages/accounts/FinancialReports";
 import Receipts from "../pages/accounts/Receipts";
 
 import Products from "../pages/inventory/Products";
@@ -93,131 +95,110 @@ function AppRoutes() {
       <Route path="/unauthorized" element={<Unauthorized />} />
       <Route path="/dashboard" element={<DashboardRedirect />} />
 
-      {/* ─── Protected: SUPER_ADMIN ────────────────────── */}
-      <Route
-        element={
-          <ProtectedRoute allowedRoles={["SUPER_ADMIN"]} />
-        }
-      >
-        <Route element={<DashboardLayout />}>
+      {/* ─── Protected Routes with Dashboard Layout ─── */}
+      <Route element={<DashboardLayout />}>
+        {/* Dashboards (Role-based Base) */}
+        <Route element={<ProtectedRoute allowedRoles={["SUPER_ADMIN"]} />}>
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        </Route>
+        <Route element={<ProtectedRoute allowedRoles={["ACCOUNTS"]} />}>
+          <Route path="/accounts/dashboard" element={<AccountsDashboard />} />
+        </Route>
+        <Route element={<ProtectedRoute allowedRoles={["PROJECT_MANAGER"]} />}>
+          <Route path="/pm/dashboard" element={<PMDashboard />} />
+        </Route>
+        <Route element={<ProtectedRoute allowedRoles={["CLIENT"]} />}>
+          <Route path="/client/dashboard" element={<ClientDashboard />} />
+        </Route>
+
+        {/* Dynamic Sections Base on sidebarMenu permissions */}
+
+        {/* User Management */}
+        <Route element={<ProtectedRoute requiredSections={["User Management"]} />}>
           <Route path="/users" element={<Users />} />
           <Route path="/create-user" element={<CreateUser />} />
           <Route path="/edit-user/:id" element={<EditUser />} />
           <Route path="/roles" element={<Roles />} />
           <Route path="/permissions" element={<Permissions />} />
-          <Route path="/clients" element={<Clients />} />
-          <Route path="/create-client" element={<CreateClient />} />
-          <Route path="/client-details/:id" element={<ClientDetails />} />
-
-          <Route path="/proposal-templates" element={<Proposals filter="Templates" />} />
-
-          {/* Inventory / Trading */}
-          <Route path="/inventory" element={<InventoryDashboard />} />
-          <Route path="/products" element={<Products />} />
-          <Route path="/create-product" element={<CreateProduct />} />
-          <Route
-            path="/inventory-movements"
-            element={<InventoryMovements />}
-          />
-          <Route
-            path="/create-stock-movement"
-            element={<CreateStockMovement />}
-          />
-          <Route path="/inventory/purchase-orders" element={<PurchaseOrders />} />
-          <Route path="/inventory/sales-orders" element={<SalesOrders />} />
-          <Route path="/inventory/profit-report" element={<ProfitReport />} />
-          <Route path="/inventory/low-stock" element={<LowStock />} />
         </Route>
-      </Route>
 
-      {/* ─── Protected: ACCOUNTS ─────────── */}
-      <Route
-        element={
-          <ProtectedRoute allowedRoles={["SUPER_ADMIN", "ACCOUNTS"]} />
-        }
-      >
-        <Route element={<DashboardLayout />}>
-          <Route path="/accounts/dashboard" element={<AccountsDashboard />} />
-          <Route path="/payments" element={<Payments />} />
-          <Route path="/expenses" element={<Expenses />} />
-          <Route path="/create-expense" element={<CreateExpense />} />
-          <Route path="/chart-of-accounts" element={<ChartOfAccounts />} />
-          <Route path="/create-account" element={<CreateAccount />} />
-          <Route path="/profit-loss" element={<ProfitLoss />} />
-          <Route path="/balance-sheet" element={<BalanceSheet />} />
-          <Route path="/receipts" element={<Receipts />} />
-        </Route>
-      </Route>
-
-      {/* ─── Protected: PROJECT_MANAGER ──── */}
-      <Route
-        element={
-          <ProtectedRoute
-            allowedRoles={["SUPER_ADMIN", "PROJECT_MANAGER"]}
-          />
-        }
-      >
-        <Route element={<DashboardLayout />}>
-          <Route path="/pm/dashboard" element={<PMDashboard />} />
+        {/* Projects */}
+        <Route element={<ProtectedRoute requiredSections={["Projects"]} />}>
           <Route path="/projects" element={<Projects />} />
           <Route path="/create-project" element={<CreateProject />} />
           <Route path="/edit-project/:id" element={<EditProject />} />
           <Route path="/jobs" element={<Jobs />} />
           <Route path="/create-job" element={<CreateJob />} />
           <Route path="/job-details" element={<JobDetails />} />
+        </Route>
+
+        {/* Estimations & Sales (Consolidated) */}
+        <Route element={<ProtectedRoute requiredSections={["Estimations"]} />}>
           <Route path="/boq" element={<BOQ />} />
           <Route path="/create-boq" element={<CreateBOQ />} />
           <Route path="/boq-details/:id" element={<BOQDetails />} />
           <Route path="/quotations" element={<Quotations />} />
+          <Route path="/quotations/:division" element={<Quotations />} />
           <Route path="/create-quotation" element={<CreateQuotation />} />
+          <Route path="/create-quotation/:division" element={<CreateQuotation />} />
+          <Route path="/edit-quotation/:id" element={<CreateQuotation />} />
           <Route path="/quotation-details/:id" element={<QuotationDetails />} />
-
-          {/* Proposals (Shared Admin/PM) */}
           <Route path="/proposals" element={<Proposals />} />
           <Route path="/create-proposal" element={<CreateProposal />} />
           <Route path="/edit-proposal/:id" element={<CreateProposal />} />
           <Route path="/draft-proposals" element={<Proposals filter="Draft" />} />
+          <Route path="/proposal-templates" element={<Proposals filter="Templates" />} />
+          <Route path="/invoices" element={<Invoices />} />
+          <Route path="/create-invoice" element={<CreateInvoice />} />
+          <Route path="/create-invoice/:division" element={<CreateInvoice />} />
         </Route>
-      </Route>
 
-      {/* ─── Protected: CLIENT ─────────────────────────── */}
-      <Route
-        element={<ProtectedRoute allowedRoles={["CLIENT"]} />}
-      >
-        <Route element={<DashboardLayout />}>
-          <Route path="/client/dashboard" element={<ClientDashboard />} />
+        {/* Clients */}
+        <Route element={<ProtectedRoute requiredSections={["Clients"]} />}>
+          <Route path="/clients" element={<Clients />} />
+          <Route path="/create-client" element={<CreateClient />} />
+          <Route path="/client-details/:id" element={<ClientDetails />} />
+        </Route>
+
+        <Route element={<ProtectedRoute requiredSections={["Accounting"]} />}>
+          <Route path="/payments" element={<Payments />} />
+          <Route path="/expenses" element={<Expenses />} />
+          <Route path="/create-expense" element={<CreateExpense />} />
+          <Route path="/expense-details/:id" element={<ExpenseDetails />} />
+          <Route path="/chart-of-accounts" element={<ChartOfAccounts />} />
+          <Route path="/create-account" element={<CreateAccount />} />
+          <Route path="/receipts" element={<Receipts />} />
+        </Route>
+
+        {/* Reports */}
+        <Route element={<ProtectedRoute requiredSections={["Reports"]} />}>
+          <Route path="/financial-reports" element={<FinancialReports />} />
+          <Route path="/profit-loss" element={<ProfitLoss />} />
+          <Route path="/balance-sheet" element={<BalanceSheet />} />
+        </Route>
+
+        {/* Inventory */}
+        <Route element={<ProtectedRoute requiredSections={["Inventory"]} />}>
+          <Route path="/inventory" element={<InventoryDashboard />} />
+          <Route path="/products" element={<Products />} />
+          <Route path="/create-product" element={<CreateProduct />} />
+          <Route path="/inventory-movements" element={<InventoryMovements />} />
+          <Route path="/create-stock-movement" element={<CreateStockMovement />} />
+          <Route path="/inventory/purchase-orders" element={<PurchaseOrders />} />
+          <Route path="/inventory/sales-orders" element={<SalesOrders />} />
+          <Route path="/inventory/profit-report" element={<ProfitReport />} />
+          <Route path="/inventory/low-stock" element={<LowStock />} />
+        </Route>
+
+        {/* Client Portal */}
+        <Route element={<ProtectedRoute requiredSections={["My Portal"]} />}>
           <Route path="/client/jobs" element={<ClientJobs />} />
           <Route path="/client/invoices" element={<ClientInvoices />} />
           <Route path="/client/proposals" element={<ClientProposals />} />
         </Route>
-      </Route>
 
-
-
-      {/* ─── Shared: SUPER_ADMIN, PROJECT_MANAGER & ACCOUNTS ─── */}
-      <Route
-        element={
-          <ProtectedRoute
-            allowedRoles={["SUPER_ADMIN", "PROJECT_MANAGER", "ACCOUNTS"]}
-          />
-        }
-      >
-        <Route element={<DashboardLayout />}>
-          <Route path="/invoices" element={<Invoices />} />
-          <Route path="/create-invoice" element={<CreateInvoice />} />
-        </Route>
-      </Route>
-
-      {/* ─── Shared Protected Routes ──────────── */}
-      <Route
-        element={
-          <ProtectedRoute
-            allowedRoles={["SUPER_ADMIN", "PROJECT_MANAGER", "ACCOUNTS", "CLIENT"]}
-          />
-        }
-      >
-        <Route element={<DashboardLayout />}>
+        {/* Shared items available to basically anyone authenticated correctly */}
+        <Route element={<ProtectedRoute allowedRoles={["SUPER_ADMIN", "PROJECT_MANAGER", "ACCOUNTS", "CLIENT"]} />}>
           <Route path="/job-documents" element={<JobDocuments />} />
           <Route path="/proposal-details/:id" element={<ProposalDetails />} />
           <Route path="/invoice-details/:id" element={<InvoiceDetails />} />

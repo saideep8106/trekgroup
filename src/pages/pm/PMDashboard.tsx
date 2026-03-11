@@ -87,7 +87,6 @@ export default function PMDashboard() {
                         title="Active Projects"
                         value={stats.projects.toString()}
                         icon={<Folder size={20} className="text-brand-500" />}
-                        trend={{ value: "+2 this month", positive: true }}
                     />
                 </Link>
                 <Link to="/jobs">
@@ -146,14 +145,18 @@ export default function PMDashboard() {
                     </div>
                 </ChartCard>
 
-                <div className="card-hover p-5 border border-gray-100 bg-white rounded-xl flex flex-col">
+                <div className="card-hover p-5 border border-gray-100 bg-white rounded-xl flex flex-col lg:col-span-2">
                     <div className="flex items-center justify-between mb-4">
                         <h2 className="text-sm font-semibold text-gray-800">Project Moments</h2>
                         <Clock size={16} className="text-gray-400" />
                     </div>
 
                     {projectMoments.length === 0 ? (
-                        <p className="text-sm text-gray-500 text-center py-4 flex-1">No recent project moments.</p>
+                        <div className="flex-1 flex flex-col items-center justify-center py-8">
+                            <Clock size={32} className="text-gray-200 mb-3" />
+                            <p className="text-sm text-gray-500 text-center">No recent project moments.</p>
+                            <p className="text-xs text-gray-400 text-center mt-1">Activities will appear here once projects start.</p>
+                        </div>
                     ) : (
                         <ul className="space-y-4 flex-1">
                             {projectMoments.map((moment, i) => (

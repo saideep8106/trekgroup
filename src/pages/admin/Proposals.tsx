@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import DataTable from "../../components/DataTable";
 import StatusBadge from "../../components/StatusBadge";
-import { Eye, Edit, Trash2, Plus, Send } from "lucide-react";
+import { Eye, Edit, Trash2, Plus } from "lucide-react";
 import { useActivity } from "../../context/ActivityContext";
 import { useAuth } from "../../context/AuthContext";
 
@@ -54,9 +54,6 @@ function Proposals({ filter }: ProposalsProps) {
                             </Link>
                             <button title="Delete" onClick={() => handleDelete(prop.id, prop.proposalNo)} className="p-1 text-slate-400 hover:text-red-600 transition-colors">
                                 <Trash2 size={16} />
-                            </button>
-                            <button title="Send to Client" className="p-1 text-slate-400 hover:text-green-600 transition-colors">
-                                <Send size={16} />
                             </button>
                         </>
                     )}

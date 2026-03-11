@@ -21,7 +21,7 @@ export default function BOQDetails() {
                 subtitle="Itemized material estimations and project quantities"
                 action={
                     <div className="flex gap-3">
-                        <button className="bg-white border text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 flex items-center gap-2">
+                        <button onClick={() => window.print()} className="bg-white border text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 flex items-center gap-2">
                             <Printer size={16} /> Print
                         </button>
                         <button className="bg-white border text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 flex items-center gap-2">

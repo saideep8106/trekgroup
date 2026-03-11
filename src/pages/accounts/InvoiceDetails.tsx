@@ -28,6 +28,13 @@ export default function InvoiceDetails() {
         window.print();
     };
 
+
+    const items = invoice.items || [];
+    const totalAmount = invoice.total || 0;
+    const advance = invoice.advance || 0;
+    const discount = invoice.discount || 0;
+    const balance = invoice.balance || (totalAmount - advance);
+
     return (
         <div className="p-6 bg-slate-50 min-h-screen">
             <div className="flex justify-between items-center mb-6 no-print">
@@ -52,140 +59,202 @@ export default function InvoiceDetails() {
                 </div>
             </div>
 
-            {/* Invoice Card - Matching Image Format */}
-            <div className="max-w-[800px] mx-auto bg-[#E6E6FA] shadow-sm border border-slate-200 overflow-hidden print:shadow-none print:border-none print:m-0 print:bg-white">
+            {/* NEW CONTRACTING INVOICE DESIGN (Visual Match) */}
+            <div className="max-w-[900px] mx-auto bg-white shadow-xl border border-black overflow-hidden print:shadow-none print:border-none print:m-0 print:w-full font-sans text-black">
 
                 {/* Header Section */}
-                <div className="bg-white p-6 flex justify-between items-start border-b-4 border-[#C8A2C8]">
-                    <div className="bg-[#1A1A40] p-4 flex flex-col items-center">
-                        <div className="w-16 h-16 mb-2 bg-white rounded flex items-center justify-center p-1">
-                            <img src="/logo.png" alt="TREK GROUP" className="w-full h-full object-contain" onError={(e) => (e.currentTarget.src = 'https://via.placeholder.com/60?text=LOGO')} />
-                        </div>
-                        <span className="text-white text-sm font-bold tracking-widest text-center">TREK GROUP<br /><span className="text-[10px] font-medium uppercase tracking-tighter opacity-80">Contracting</span></span>
-                    </div>
+                <div className="p-8 pb-4 flex justify-between items-start border-b border-black">
+                    <h1 className="text-4xl font-black tracking-tight self-center uppercase">INVOICE</h1>
 
-                    <div className="text-left text-[11px] font-bold space-y-1">
-                        <h2 className="text-xl font-black tracking-tight text-[#1A1A40] mb-2 uppercase">Trek Group Contracting</h2>
-                        <div className="grid grid-cols-[80px_1fr]">
-                            <span>MOB</span>
-                            <span>: +974 3051 6559 / 7171 6559</span>
-                        </div>
-                        <div className="grid grid-cols-[80px_1fr]">
-                            <span>EMAIL</span>
-                            <span>: info@trekgroups.com</span>
-                        </div>
-                        <div className="grid grid-cols-[80px_1fr]">
-                            <span>WEB</span>
-                            <span>: www.trekgroups.com</span>
-                        </div>
-                        <div className="grid grid-cols-[80px_1fr]">
-                            <span>Location</span>
-                            <span>: Al Azizya -Doha -Qatar</span>
+                    <div className="text-right flex flex-col items-end">
+                        <div className="text-brand-600 font-bold text-xl flex flex-col items-end leading-tight max-w-[400px] text-right">
+                            <span className="text-black text-xs font-bold opacity-60">TREK GROUP TRADING CONTRACTING AND SERVICES</span>
+                            <span className="text-brand-600 text-lg font-black tracking-[0.2em] uppercase mt-1">
+                                {invoice.branch === "Business" ? "Business Services" :
+                                    invoice.branch === "Trading" ? "Trading Services" :
+                                        "Contracting Division"}
+                            </span>
                         </div>
                     </div>
                 </div>
 
-                {/* Info Box */}
-                <div className="p-10 text-sm font-bold text-slate-800 space-y-6">
-                    <div className="space-y-2">
-                        <div className="grid grid-cols-[100px_1fr]">
-                            <span>Date</span>
-                            <span>: {new Date(invoice.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }).replace(/(\d+)/, '$1th')}</span>
+                {/* Metadata Grid */}
+                <div className="grid grid-cols-2 border-b border-black text-[13px]">
+                    <div className="border-r border-black p-4 space-y-2">
+                        <div className="grid grid-cols-[130px_1fr]">
+                            <span className="font-bold">Invoice Type:</span>
+                            <span>{invoice.invoiceType || "Credit"}</span>
                         </div>
-                        <div className="grid grid-cols-[100px_1fr]">
-                            <span>Ref.</span>
-                            <span>: TGC/G/JN/{invoice.invoiceNo.split('-').pop()}</span>
+                        <div className="grid grid-cols-[130px_1fr]">
+                            <span className="font-bold">Customer Name:</span>
+                            <span className="font-black">{invoice.client}</span>
                         </div>
-                        <div className="grid grid-cols-[100px_1fr]">
-                            <span>To</span>
-                            <span>: {invoice.refNo || "30808484"}</span>
+                        <div className="grid grid-cols-[130px_1fr]">
+                            <span className="font-bold uppercase">PROJECT:</span>
+                            <span className="font-black uppercase">{invoice.refNo ? invoice.refNo : (invoice.project || "")}</span>
+                        </div>
+                        <div className="grid grid-cols-[130px_1fr] mt-4 min-h-[3rem]">
+                            <span className="font-bold">Address:</span>
+                            <span className="whitespace-pre-wrap">{invoice.address || ""}</span>
+                        </div>
+                        <div className="grid grid-cols-[130px_1fr]">
+                            <span className="font-bold">Tel:</span>
+                            <span>{invoice.tel || "+974 71716559"}</span>
+                        </div>
+                        <div className="grid grid-cols-[130px_1fr]">
+                            <span className="font-bold">QID:</span>
+                            <span>{invoice.qid || ""}</span>
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-[100px_1fr] text-base font-black uppercase text-[#1A1A40]">
-                        <span>PROJECT</span>
-                        <span>: {invoice.refNo ? `Reference ${invoice.refNo}` : "Lusial shope"}</span>
+                    <div className="p-4 space-y-2 text-left">
+                        <div className="grid grid-cols-[100px_1fr]">
+                            <span className="font-bold">Invoice No.:</span>
+                            <span className="font-black">{invoice.invoiceNo.split('-').pop()}</span>
+                        </div>
+                        <div className="grid grid-cols-[100px_1fr]">
+                            <span className="font-bold">Date:</span>
+                            <span>{new Date(invoice.date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '-')}</span>
+                        </div>
+                        <div className="grid grid-cols-[100px_1fr] mt-4">
+                            <span className="font-bold uppercase">LPO No.:</span>
+                            <span className="font-black">{invoice.lpoNo || ""}</span>
+                        </div>
+                        <div className="grid grid-cols-[100px_1fr] mt-2">
+                            <span className="font-bold">Salesman:</span>
+                            <span>{invoice.salesman || ""}</span>
+                        </div>
                     </div>
+                </div>
 
-                    <div className="space-y-4">
-                        <p>Dear sir</p>
-                        <p className="font-medium leading-tight">with reference to the above-mentioned project and your inquiry for the Glass work, please find below our final rock bottom prices: -</p>
-                    </div>
-
-                    {/* Table */}
-                    <table className="w-full border-collapse border border-slate-400">
-                        <thead className="bg-slate-100 uppercase text-[12px] tracking-tight">
-                            <tr>
-                                <th className="border border-slate-400 px-3 py-2 text-center w-[60%]">Product Type</th>
-                                <th className="border border-slate-400 px-3 py-2 text-center">QTY</th>
-                                <th className="border border-slate-400 px-3 py-2 text-center">UNIT PRICE</th>
-                                <th className="border border-slate-400 px-3 py-2 text-center">Unite Rate</th>
+                {/* Main Table */}
+                <div className="min-h-[400px]">
+                    <table className="w-full border-collapse">
+                        <thead>
+                            <tr className="border-b border-black text-sm font-black">
+                                <th className="border-r border-black p-2 w-12 text-center uppercase">No.</th>
+                                <th className="border-r border-black p-2 w-24 text-center uppercase">Item Code</th>
+                                <th className="border-r border-black p-2 text-left uppercase">Item Description</th>
+                                <th className="border-r border-black p-2 w-20 text-center uppercase">Qty</th>
+                                <th className="border-r border-black p-2 w-28 text-center uppercase">Unit Price</th>
+                                <th className="border-r border-black p-2 w-24 text-center uppercase">Discount</th>
+                                <th className="p-2 w-32 text-center uppercase">Amount</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {invoice.items && invoice.items.length > 0 ? (
-                                invoice.items.map((item: any, idx: number) => (
-                                    <tr key={idx} className="bg-white">
-                                        <td className="border border-slate-400 px-3 py-3 text-[11px] leading-tight font-medium">
-                                            {item.description}
-                                        </td>
-                                        <td className="border border-slate-400 px-3 py-3 text-center">{item.quantity}</td>
-                                        <td className="border border-slate-400 px-3 py-3 text-right"></td>
-                                        <td className="border border-slate-400 px-3 py-3 text-center">{parseFloat(item.amount).toLocaleString()}</td>
+                            {items.length > 0 ? items.map((item: any, idx: number) => (
+                                <tr key={idx} className="border-b border-black leading-tight h-10">
+                                    <td className="border-r border-black p-2 text-center align-top">{idx + 1}</td>
+                                    <td className="border-r border-black p-2 text-center align-top">{item.code || ""}</td>
+                                    <td className="border-r border-black p-2 text-[12px] align-top whitespace-pre-wrap font-medium">
+                                        {item.description}
+                                    </td>
+                                    <td className="border-r border-black p-2 text-center align-top">{item.quantity}</td>
+                                    <td className="border-r border-black p-2 text-center align-top">{parseFloat(item.unitPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                    <td className="border-r border-black p-2 text-center align-top">{item.discount || ""}</td>
+                                    <td className="p-2 text-right font-medium align-top">{parseFloat(item.amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                </tr>
+                            )) : (
+                                Array.from({ length: 12 }).map((_, i) => (
+                                    <tr key={i} className="border-b border-black h-8 opacity-10">
+                                        <td className="border-r border-black"></td>
+                                        <td className="border-r border-black"></td>
+                                        <td className="border-r border-black"></td>
+                                        <td className="border-r border-black"></td>
+                                        <td className="border-r border-black"></td>
+                                        <td className="border-r border-black"></td>
+                                        <td></td>
                                     </tr>
                                 ))
-                            ) : (
-                                <tr className="bg-white">
-                                    <td className="border border-slate-400 px-3 py-3 text-[11px] leading-tight font-medium">Supply and installation of 6 mm blue reflection tempered glass with silicone</td>
-                                    <td className="border border-slate-400 px-3 py-3 text-center">1</td>
-                                    <td className="border border-slate-400 px-3 py-3 text-right"></td>
-                                    <td className="border border-slate-400 px-3 py-3 text-center">{parseFloat(invoice.amount).toLocaleString()}</td>
-                                </tr>
                             )}
-                            {/* Totals Section In Table */}
-                            <tr className="bg-white font-black uppercase">
-                                <td className="border border-slate-400 px-3 py-2">TOTAL</td>
-                                <td className="border border-slate-400"></td>
-                                <td className="border border-slate-400"></td>
-                                <td className="border border-slate-400 px-3 py-2 text-center">{parseFloat(invoice.amount).toLocaleString()}</td>
-                            </tr>
+                            {/* Filling empty space with grid lines */}
+                            {items.length > 0 && items.length < 12 && Array.from({ length: 12 - items.length }).map((_, i) => (
+                                <tr key={`empty-${i}`} className="border-b border-black h-8">
+                                    <td className="border-r border-black"></td>
+                                    <td className="border-r border-black"></td>
+                                    <td className="border-r border-black"></td>
+                                    <td className="border-r border-black"></td>
+                                    <td className="border-r border-black"></td>
+                                    <td className="border-r border-black"></td>
+                                    <td></td>
+                                </tr>
+                            ))}
                         </tbody>
                     </table>
+                </div>
 
-                    {/* Footer / Terms */}
-                    <div className="space-y-4 pt-4">
-                        <h3 className="underline font-black uppercase text-[13px]">Terms & Condition:</h3>
-                        <ol className="text-[11px] font-bold list-decimal pl-5 space-y-1">
-                            <li><span className="font-black">Payment:</span> 50% advance, 30% upon delivery, and 20% upon completion</li>
-                            <li><span className="font-black">Delivery:</span> with 15 days from the advance payment.</li>
-                            <li>Above prices are subjected to change against the significant market prices fluctuation.</li>
-                            <li><span className="font-black">Offer is valid for 15 Days</span></li>
-                            <li>This quotation is prepared on the basis of the specifications provided in the scope of works and limited to the same.</li>
-                            <li>Electrical provisions and floor carpet to be provided by the client.</li>
-                            <li>The above pricing is based on the specifications provided and limited to the quantities stated above. Any variation on the above specifications or quantities will result in change of price and also effect the delivery period. For any changes required to be made other than the scope of works stated, should be made in writing and need written confirmation in order to carry out the same.</li>
-                            <li>We will not be responsible for delivery arising out of delays in approvals of drawings, samples, payments, any natural calamities or pandemics or any situation that is beyond our control.</li>
-                        </ol>
+                {/* Sub-Total Row */}
+                <div className="flex border-b border-black h-10 font-black text-sm">
+                    <div className="flex-1 flex items-center justify-end px-4 border-r border-black uppercase">Total</div>
+                    <div className="w-20 flex items-center justify-center border-r border-black text-lg">-</div>
+                    <div className="w-28 border-r border-black"></div>
+                    <div className="w-24 border-r border-black"></div>
+                    <div className="w-32 flex items-center justify-end px-4 border-l border-black">{parseFloat(totalAmount).toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</div>
+                </div>
+
+                {/* Bottom Section: Remarks & Summary */}
+                <div className="flex text-[13px] border-b border-black">
+                    <div className="flex-1 border-r border-black flex flex-col min-h-[160px]">
+                        <div className="p-4 h-24 border-b border-black">
+                            <span className="font-extrabold uppercase text-[14px]">Remarks:</span>
+                        </div>
+                        <div className="p-4 flex-1 relative">
+                            <span className="font-extrabold uppercase text-[14px]">Notes:</span>
+                            <div className="absolute bottom-8 right-16 text-center leading-tight">
+                            </div>
+                        </div>
                     </div>
 
-                    {/* Signature Row */}
-                    <div className="pt-6 space-y-1">
-                        <p className="font-black text-[13px]">Best regards,</p>
-                        <p className="font-black text-[13px]">Mr. Afzal</p>
-                        <p className="font-bold text-[12px]">Contracting Manager</p>
-                        <p className="font-bold text-[12px]">(+974) 7171 6559</p>
-                        <p className="font-bold text-[12px]">Email: info@trekgroups.com</p>
+                    <div className="w-[305px] flex flex-col">
+                        <div className="flex border-b border-black h-12">
+                            <div className="w-[120px] p-2 font-black flex items-center border-r border-black uppercase text-xs">Advance:</div>
+                            <div className="flex-1 p-2 flex items-center justify-end font-bold">{advance > 0 ? parseFloat(advance).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : ""}</div>
+                        </div>
+                        <div className="flex border-b border-black h-12">
+                            <div className="w-[120px] p-2 font-black flex items-center border-r border-black uppercase text-xs">Discount</div>
+                            <div className="flex-1 p-2 flex items-center justify-end font-bold">{discount > 0 ? parseFloat(discount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : ""}</div>
+                        </div>
+                        <div className="flex h-16 border-b border-black">
+                            <div className="w-[120px] p-2 font-black flex items-center border-r border-black leading-tight uppercase text-xs">Balance<br />Payable</div>
+                            <div className="flex-1 p-2 flex items-center justify-end font-black text-xl">{parseFloat(balance).toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</div>
+                        </div>
+                        <div className="flex-1"></div>
                     </div>
                 </div>
+
+                {/* Footer Message */}
+                <div className="p-4 text-center text-[15px] font-black italic">
+                    Thanks for your business! Please Visit Again.
+                </div>
+
             </div>
 
             <style>{`
         @media print {
           .no-print { display: none !important; }
-          body { background: white !important; margin: 0; padding: 0; }
+          body { 
+            background: white !important; 
+            margin: 0 !important; 
+            padding: 0 !important; 
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
           .bg-slate-50 { background: white !important; }
           .p-6 { padding: 0 !important; }
-          .max-w-[800px] { max-width: 100% !important; border: none !important; }
-          .bg-[#E6E6FA] { background: white !important; }
+          .max-w-\\[900px\\] { 
+            max-width: 100% !important; 
+            width: 210mm !important;
+            border: 1px solid black !important; 
+            box-shadow: none !important; 
+            margin: 0 auto !important;
+            display: block !important;
+          }
+          .font-black { font-weight: 900 !important; }
+          .font-bold { font-weight: 700 !important; }
+          @page { 
+            size: A4 portrait; 
+            margin: 10mm; 
+          }
         }
       `}</style>
         </div>

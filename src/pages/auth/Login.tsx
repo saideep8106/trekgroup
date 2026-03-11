@@ -1,10 +1,10 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { useNavigate, Navigate } from "react-router-dom";
+import { useNavigate, Navigate, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { ROLE_DASHBOARD_MAP } from "../../types/user";
 import type { Role } from "../../types/user";
-import { LogIn, Mail, Lock } from "lucide-react";
+import { LogIn, Mail, Lock, UserPlus } from "lucide-react";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -27,35 +27,53 @@ export default function Login() {
       return;
     }
 
-    // Credential-based role assignment
     let assignedRole: Role | null = null;
     let userName = "Demo User";
+    let userId = "1";
 
-    if (email === "admin@trekgroup.com" && password === "password") {
-      assignedRole = "SUPER_ADMIN";
-      userName = "Admin User";
-    } else if (email === "accounts@trekgroup.com" && password === "password") {
-      assignedRole = "ACCOUNTS";
-      userName = "Accounts User";
-    } else if (email === "pm@trekgroup.com" && password === "password") {
-      assignedRole = "PROJECT_MANAGER";
-      userName = "PM User";
-    } else if (email === "client@trekgroup.com" && password === "password") {
-      assignedRole = "CLIENT";
-      userName = "Client User";
+    // 1. First, check dynamically created users in local storage
+    const existingUsers = JSON.parse(localStorage.getItem("trek_users") || "[]");
+    const dynamicUser = existingUsers.find((u: any) => u.email === email && u.password === password);
+
+    if (dynamicUser) {
+      assignedRole = dynamicUser.role as Role;
+      userName = dynamicUser.name;
+      userId = dynamicUser.id;
+    } else {
+      // 2. Fallback to hardcoded demo credentials
+      if (email === "admin@trekgroup.com" && password === "password") {
+        assignedRole = "SUPER_ADMIN";
+        userName = "Admin User";
+      } else if (email === "accounts@trekgroup.com" && password === "password") {
+        assignedRole = "ACCOUNTS";
+        userName = "Accounts User";
+      } else if (email === "pm@trekgroup.com" && password === "password") {
+        assignedRole = "PROJECT_MANAGER";
+        userName = "PM User";
+      } else if (email === "client@trekgroup.com" && password === "password") {
+        assignedRole = "CLIENT";
+        userName = "Client User";
+      }
     }
 
     if (!assignedRole) {
-      setError("Invalid email or password for any known role");
+      // Intentionally distinct error message to help debug
+      setError("Invalid email or password");
+      return;
+    }
+
+    // Double check valid role exists in map, to protect against bad local storage edits
+    if (!ROLE_DASHBOARD_MAP[assignedRole]) {
+      setError("Invalid role assignment on account");
       return;
     }
 
     const userData = {
-      id: "1",
+      id: userId,
       name: userName,
       email,
       role: assignedRole,
-      token: "demo-token",
+      token: `${assignedRole}-token-xyz`,
     };
 
     login(userData);
@@ -166,9 +184,11 @@ export default function Login() {
 
             {/* Password */}
             <div className="mb-6">
-              <label className="label" htmlFor="login-password">
-                Password
-              </label>
+              <div className="flex items-center justify-between mb-2">
+                <label className="label mb-0" htmlFor="login-password">
+                  Password
+                </label>
+              </div>
               <div className="relative">
                 <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
@@ -191,6 +211,16 @@ export default function Login() {
               <LogIn size={18} />
               Sign In
             </button>
+
+            {/* Register Link */}
+            <div className="mt-6 text-center">
+              <p className="text-sm text-gray-500">
+                Are you a new client?{" "}
+                <Link to="/signup" className="text-brand-600 hover:text-brand-700 font-semibold transition-colors flex items-center justify-center gap-1 mt-1">
+                  <UserPlus size={14} /> Create a Client Account
+                </Link>
+              </p>
+            </div>
           </div>
 
           <p className="text-center text-xs text-gray-400 mt-6">

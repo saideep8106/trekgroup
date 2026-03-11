@@ -14,6 +14,7 @@ import {
   FileCheck,
   Receipt,
   AlertTriangle,
+  BarChart2,
 } from "lucide-react";
 import type { Role } from "../types/user";
 import type { LucideIcon } from "lucide-react";
@@ -61,45 +62,19 @@ export const sidebarMenu: SidebarSection[] = [
     ],
   },
 
-  // ─── BOQ & Quotations (Project Manager) ──────────────
+  // ─── Estimations & Sales (Consolidated) ────────────
   {
     section: "Estimations",
-    roles: ["PROJECT_MANAGER"],
+    roles: ["SUPER_ADMIN", "ACCOUNTS", "PROJECT_MANAGER"],
     items: [
       { label: "BOQ", path: "/boq", icon: ClipboardList },
-      { label: "Quotations", path: "/quotations", icon: FileCheck },
+      { label: "Business Services Proposal", path: "/quotations/business", icon: FileText },
+      { label: "Trading Services", path: "/quotations/trading", icon: Package },
+      { label: "Contracting Division", path: "/quotations/contracting", icon: FileCheck },
     ],
   },
 
   // ─── Clients ─────────────────────────────────────────
-  {
-    section: "Clients",
-    roles: ["SUPER_ADMIN"],
-    items: [
-      { label: "Clients", path: "/clients", icon: User },
-    ],
-  },
-
-  // ─── Business Proposals ───────────────────────
-  {
-    section: "Business Proposals",
-    roles: ["SUPER_ADMIN", "PROJECT_MANAGER"],
-    items: [
-      { label: "Proposal List", path: "/proposals", icon: FileText },
-      { label: "Create Proposal", path: "/create-proposal", icon: ClipboardList },
-      { label: "Draft Proposals", path: "/draft-proposals", icon: FileText },
-    ],
-  },
-
-  // ─── Invoicing (Project Manager) ───────────────────────
-  {
-    section: "Invoicing",
-    roles: ["PROJECT_MANAGER"],
-    items: [
-      { label: "Invoices", path: "/invoices", icon: Receipt },
-      { label: "Create Invoice", path: "/create-invoice", icon: ClipboardList },
-    ],
-  },
 
   // ─── Accounting (Super Admin + Accounts) ───────────────
   {
@@ -107,7 +82,6 @@ export const sidebarMenu: SidebarSection[] = [
     roles: ["SUPER_ADMIN", "ACCOUNTS"],
     items: [
       { label: "Chart of Accounts", path: "/chart-of-accounts", icon: FileText },
-      { label: "Invoices", path: "/invoices", icon: Receipt },
       { label: "Payments", path: "/payments", icon: CreditCard },
       { label: "Expenses", path: "/expenses", icon: Receipt },
     ],
@@ -116,10 +90,9 @@ export const sidebarMenu: SidebarSection[] = [
   // ─── Reports (Super Admin + Accounts) ────────────────
   {
     section: "Reports",
-    roles: ["SUPER_ADMIN", "ACCOUNTS"],
+    roles: ["SUPER_ADMIN", "ACCOUNTS", "PROJECT_MANAGER"],
     items: [
-      { label: "Profit & Loss", path: "/profit-loss", icon: BarChart3 },
-      { label: "Balance Sheet", path: "/balance-sheet", icon: FileText },
+      { label: "Financial Reports", path: "/financial-reports", icon: BarChart2 },
     ],
   },
 

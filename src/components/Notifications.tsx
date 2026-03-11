@@ -43,8 +43,8 @@ function Notifications() {
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute right-0 mt-2 w-80 bg-white border border-gray-100 rounded-xl shadow-float animate-slide-down z-50">
-          <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+        <div className="absolute right-0 mt-2 w-80 bg-white/80 backdrop-blur-md border border-white/20 rounded-xl shadow-xl animate-slide-down z-50">
+          <div className="px-4 py-3 border-b border-gray-100/50 flex items-center justify-between">
             <h3 className="text-sm font-semibold text-gray-800">
               Notifications
             </h3>

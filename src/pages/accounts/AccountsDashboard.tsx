@@ -77,6 +77,7 @@ export default function AccountsDashboard() {
                         title="Pending Payments"
                         value="QAR 2,150"
                         icon={<CreditCard size={20} className="text-amber-500" />}
+                        trend={{ value: "Stable this week", positive: true }}
                     />
                 </Link>
                 <Link to="/profit-loss">

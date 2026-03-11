@@ -9,7 +9,8 @@ function CreateUser() {
   const [form, setForm] = useState({
     name: "",
     email: "",
-    role: "Project Manager",
+    password: "", // Added password field so admin can give them login access
+    role: "PROJECT_MANAGER",
     status: "Active"
   });
 
@@ -27,6 +28,13 @@ function CreateUser() {
       id: `USR-${Math.floor(1000 + Math.random() * 9000)}`
     };
     const existing = JSON.parse(localStorage.getItem("trek_users") || "[]");
+
+    // Check if email already exists
+    if (existing.some((u: any) => u.email === form.email)) {
+      alert("Email already in use");
+      return;
+    }
+
     localStorage.setItem("trek_users", JSON.stringify([...existing, newUser]));
 
     logActivity("Created New User", "admin", "/users", newUser.name);
@@ -67,6 +75,19 @@ function CreateUser() {
           </div>
 
           <div>
+            <label className="block text-sm mb-1 text-gray-600">Password</label>
+            <input
+              type="password"
+              name="password"
+              value={form.password}
+              onChange={handleChange}
+              className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
+              placeholder="Assign an initial password"
+              required
+            />
+          </div>
+
+          <div>
             <label className="block text-sm mb-1 text-gray-600">Role</label>
             <select
               name="role"
@@ -89,8 +110,8 @@ function CreateUser() {
               onChange={handleChange}
               className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
             >
-              <option>Active</option>
-              <option>Inactive</option>
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
             </select>
           </div>
 

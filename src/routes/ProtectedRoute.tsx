@@ -1,12 +1,14 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import type { Role } from "../types/user";
+import { getAuthorizedSidebarSections } from "../utils/permissions";
 
 interface Props {
   allowedRoles?: Role[];
+  requiredSections?: string[];
 }
 
-export default function ProtectedRoute({ allowedRoles }: Props) {
+export default function ProtectedRoute({ allowedRoles, requiredSections }: Props) {
   const { user, isAuthenticated } = useAuth();
 
   if (!isAuthenticated || !user) {
@@ -15,6 +17,16 @@ export default function ProtectedRoute({ allowedRoles }: Props) {
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {
     return <Navigate to="/unauthorized" replace />;
+  }
+
+  if (requiredSections && requiredSections.length > 0) {
+    const authorizedSections = getAuthorizedSidebarSections(user.role);
+    const hasAccess = requiredSections.some(sec =>
+      authorizedSections.some(s => s.section === sec)
+    );
+    if (!hasAccess) {
+      return <Navigate to="/unauthorized" replace />;
+    }
   }
 
   return <Outlet />;

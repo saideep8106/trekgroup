@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { sidebarMenu } from "../config/sidebarMenu";
+import { getAuthorizedSidebarSections } from "../utils/permissions";
 import { ChevronRight } from "lucide-react";
 
 function Sidebar() {
@@ -41,45 +41,43 @@ function Sidebar() {
 
       {/* ─── Navigation Menu ───────────────────────────── */}
       <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
-        {sidebarMenu
-          .filter((section) => userRole && section.roles.includes(userRole))
-          .map((section, i) => (
-            <div key={i}>
-              <p className="text-[10px] text-slate-500 uppercase tracking-[0.1em] font-semibold mb-2 px-3">
-                {section.section}
-              </p>
+        {getAuthorizedSidebarSections(userRole).map((section, i) => (
+          <div key={i}>
+            <p className="text-[10px] text-slate-500 uppercase tracking-[0.1em] font-semibold mb-2 px-3">
+              {section.section}
+            </p>
 
-              <div className="space-y-0.5">
-                {section.items.map((item, index) => {
-                  const Icon = item.icon;
-                  const active = location.pathname === item.path;
+            <div className="space-y-0.5">
+              {section.items.map((item, index) => {
+                const Icon = item.icon;
+                const active = location.pathname === item.path;
 
-                  return (
-                    <Link
-                      key={index}
-                      to={item.path}
-                      className={`group flex items-center gap-3 px-3 py-2 text-[13px] rounded-lg transition-all duration-200
+                return (
+                  <Link
+                    key={index}
+                    to={item.path}
+                    className={`group flex items-center gap-3 px-3 py-2 text-[13px] rounded-lg transition-all duration-200
                         ${active
-                          ? "bg-brand-600 text-white shadow-lg shadow-brand-600/25 font-medium"
-                          : "text-slate-400 hover:bg-sidebar-hover hover:text-slate-200"
-                        }
+                        ? "bg-brand-600 text-white shadow-lg shadow-brand-600/25 font-medium"
+                        : "text-slate-400 hover:bg-sidebar-hover hover:text-slate-200"
+                      }
                       `}
-                    >
-                      <Icon
-                        size={17}
-                        strokeWidth={active ? 2.2 : 1.7}
-                        className={active ? "text-white" : "text-slate-500 group-hover:text-slate-300"}
-                      />
-                      <span className="flex-1">{item.label}</span>
-                      {active && (
-                        <ChevronRight size={14} className="text-white/60" />
-                      )}
-                    </Link>
-                  );
-                })}
-              </div>
+                  >
+                    <Icon
+                      size={17}
+                      strokeWidth={active ? 2.2 : 1.7}
+                      className={active ? "text-white" : "text-slate-500 group-hover:text-slate-300"}
+                    />
+                    <span className="flex-1">{item.label}</span>
+                    {active && (
+                      <ChevronRight size={14} className="text-white/60" />
+                    )}
+                  </Link>
+                );
+              })}
             </div>
-          ))}
+          </div>
+        ))}
       </nav>
 
       {/* ─── Footer ────────────────────────────────────── */}

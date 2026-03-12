@@ -6,7 +6,6 @@ import {
   FileText,
   CreditCard,
   Folder,
-  User,
   Briefcase,
   Package,
   BarChart3,
